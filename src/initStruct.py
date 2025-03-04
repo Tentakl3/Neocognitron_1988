@@ -55,7 +55,7 @@ class InitStruct:
     def generateC(self):
         self.C = []
         self.C.append(self.generateMonotonic(self.gamma[0], self.S_WINDOW_SIZE[0], 1, True))
-        for i in range(self.NUM_LAYERS):
+        for i in range(1,self.NUM_LAYERS):
             self.C.append(self.generateMonotonic(self.gamma[i], self.S_WINDOW_SIZE[i], self.PLANES_PER_LAYER[i-1], True))
 
     def generateD(self):

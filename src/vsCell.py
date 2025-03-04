@@ -7,7 +7,6 @@ class VSCell:
 
     def propagate(self, inputs):
         output = 0.0
-        #print(inputs[0].shape[0])
         for k in range(inputs.shape[0]):
             for w in range(inputs[0].shape[0]):
                 if inputs[k][w] == float('inf'):

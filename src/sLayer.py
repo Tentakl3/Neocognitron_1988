@@ -81,7 +81,7 @@ class SLayer:
         weightLength = pow(self.windowSize, 2)
         representatives = output.getRepresentatives(self.columnSize)
         for plane in range(self.numPlanes):
-            if representatives[plane] != None:
+            if representatives[plane] is not None:
                 x, y = representatives[plane]
                 #delta of "b" parameter
                 delta = self.q/2 * vOutput[x][y]

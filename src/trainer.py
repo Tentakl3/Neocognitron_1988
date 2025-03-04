@@ -2,8 +2,6 @@ import random
 import cv2 as cv
 import neocognitron
 import initStruct
-import numpy as np
-import message
 import os
 
 IMG_SIZE = 45
@@ -13,7 +11,7 @@ K_FOLD = 5
 NUM_LOOPS = 2
 ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 PATH_TO_SAVED = '../saved/param/'
-DATA_DIR = '../data/'
+DATA_DIR = 'data/'
 TRAIN_DATA_DIR = 'data/training/'
 MAX_PER_PLANE = 7
 ON = 0.
@@ -30,7 +28,6 @@ def train(init):
     return network
 
 def getTrainFile(init, layer, plane):
-    imageSize = init.S_WINDOW_SIZE[layer]
     layer = layer + 1
     plane = plane + 1
     output = []
@@ -87,6 +84,6 @@ def validate(network):
 def runTraining():
 	init = initStruct.InitStruct()
 	network = train(init)
-	#save network ? 
+	#save network ?
 	return network
 			

@@ -69,7 +69,7 @@ class Message(object):
 					if sColumn[plane][x][y] > maxVal:
 						maxL = location.Location(plane, x, y)
 		offset = (windowSize - windowSize%2)/2
-		if maxL != None:
+		if maxL is not None:
 			x, y = maxL.getPoint()
 			maxL.setPoint(x+center[0]-offset, y+center[1]-offset)
 		return maxL
@@ -85,24 +85,43 @@ class Message(object):
 		if windowSize == self.size:
 			count = 0 
 			for i in range(windowSize):
-				for j in range(windowSize):	
+				for j in range(windowSize):
 					try:
 						output[count] = self.outputs[plane][i][j]
 					except Exception:
 						output[count] = 0.
 					count += 1
+		else:
+			startX = x - (windowSize/2)
+			startY = y - (windowSize/2)
+			endX = x + (windowSize/2)
+			endY = y + (windowSize/2)
+			count = 0
+			for i in range(int(startX), int(endX)):
+				for j in range(int(startY), int(endY)):
+					try:
+						output[count] = self.outputs[plane][i][j]
+					except Exception:
+						output[count] = 0.
+					count += 1
+		return output
 
-	def getSingleOutput(self, location):
-		return self.outputs[location.getPlane()][location.getX()][location.getY()]
+	def getSingleOutput(self, loc):
+		return self.outputs[loc.getPlane()][loc.getX()][loc.getY()]
 
 	def getMaxPerPlane(self, plane, points):
 		p = None
-		maxVal = -float('inf') 
+		maxVal = -float('inf')
 		for point in points:
 			temp = point
-			if temp == None: p = None
-			elif temp.getPlane() == plane:				
+			if temp is not None: p = None
+			elif temp.getPlane() == plane:	
 				if self.getSingleOutput(temp) > maxVal:
 					maxVal = self.getSingleOutput(temp)
-					p = temp.getPoint()		
+					p = temp.getPoint()
 		return p
+	
+	def display(self):
+		for plane in range(self.numPlanes):
+			print('PLANE: ' + str(plane+1))
+			print(self.outputs[plane])
