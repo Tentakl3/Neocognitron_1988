@@ -10,7 +10,6 @@ TRAIN_PER_CLASS = 35
 K_FOLD = 5
 NUM_LOOPS = 2
 ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-PATH_TO_SAVED = '../saved/param/'
 DATA_DIR = 'data/'
 TRAIN_DATA_DIR = 'data/training/'
 MAX_PER_PLANE = 7
@@ -28,38 +27,45 @@ def train(init):
     return network
 
 def getTrainFile(init, layer, plane):
-    layer = layer + 1
-    plane = plane + 1
-    output = []
-    path = TRAIN_DATA_DIR + 'layer' + str(layer) + '/' + str(plane) + '/'
-    for folder, subfolders, contents in os.walk(path):
-        for content in contents:
-            if not content[0] == '.':
-                img = cv.imread(path + content, flags=cv.IMREAD_GRAYSCALE)
-                for x in range(img.shape[0]):
-                    for y in range(img.shape[1]):
-                        if img[x][y] == OFF: img[x][y] = ON
-                        elif img[x][y] == ON: img[x][y] = 1.
-                output.append(img)
-    
-    return output
+	layer = layer + 1
+	plane = plane + 1
+	output = []
+	path = TRAIN_DATA_DIR + 'layer' + str(layer) + '/' + str(plane) + '/'
+	for folder, subfolders, contents in os.walk(path):
+		for content in contents:
+			if not content[0] == '.':
+				img = cv.imread(path + content, flags=cv.IMREAD_GRAYSCALE)
+				a, img = cv.threshold(img, 127, 255, cv.THRESH_BINARY)
+				for x in range(img.shape[0]):
+					for y in range(img.shape[1]):
+						if img[x][y] == OFF: img[x][y] = ON
+						elif img[x][y] == ON: img[x][y] = 1.
+				output.append(img)
 
+	return output
+
+def numzeros(fileNum):
+		if fileNum != 0:	
+			if int((fileNum+1)/10) == 0:
+				return 2
+			else:
+				return 1
+		else:
+			return 2
+		
 def getInputs(trainFiles):
 	inputs = []
 	for letter in ALPHABET:
 		for fileNum in trainFiles:
-			if fileNum == 0: continue	
-			numZeros = 3
-			if fileNum/10 != 0:
-				numZeros = 1
-			else:
-				numZeros = 2
-			fileName = letter + '-' + '0'*numZeros + str(fileNum) + '.png'						
+			numZeros = numzeros(fileNum)
+			fileName = letter + '-' + '0'*numZeros + str(fileNum + 1) + '.png'						
 			img = cv.imread(DATA_DIR + letter+ '/' + fileName, flags=cv.IMREAD_GRAYSCALE)
 			for x in range(img.shape[0]):
 					for y in range(img.shape[1]):
-						if img[x][y] == OFF: img[x][y] = ON
-						elif img[x][y] == ON: img[x][y] = 1.
+						if img[x][y] == OFF: 
+							img[x][y] = ON
+						elif img[x][y] == ON: 
+							img[x][y] = 1.
 			inputs.append((img, letter))
 	random.shuffle(inputs)
 	return inputs
@@ -69,10 +75,11 @@ def validate(network):
 	numTotal = 0
 	validateInputs = getInputs(range(FILES_PER_CLASS))
 	print ('TESTING')
-	for n in range(len(validateInputs)):
+	#len(validateInputs)
+	for n in range(1):
 			print ('TESTING LETTER ' + validateInputs[n][1])
 			guess = network.propagate(validateInputs[n][0], False)
-			guess = ALPHABET[guess]			
+			guess = ALPHABET[guess]		
 			print ('\t<= ' + str(validateInputs[n][1]))
 			print ('\t=> ' + str(guess))
 			if guess == validateInputs[n][1]: numCorrect += 1

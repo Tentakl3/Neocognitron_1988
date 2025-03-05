@@ -5,6 +5,7 @@ import cv2 as cv
 import numpy as np
 
 ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+STORAGE_PATH = 'data/storage/layer'
 
 class Neocognitron(object):
 	def __init__(self, init):
@@ -27,10 +28,29 @@ class Neocognitron(object):
 		for layer in range(self.numLayers):
 			output = self.sLayers[layer].propagate(output, False)
 			output = self.cLayers[layer].propagate(output)
+			self.imgPlane(layer, output)
 		if not train:
 			result = self.determineOutput(output.getPointsOnPlanes(0, 0))
 			return result
-    
+
+	def imgPlane(self, layer, out):
+		new_size = (500,500)
+		print(out.size)
+		for plane in range(out.numPlanes):
+			filename = f'{STORAGE_PATH}{layer}/plane{plane}.png'
+			array = out.outputs[plane]
+			# Convert array to NumPy array
+			array = np.array(array, dtype=np.float32)
+
+			min_val, max_val = np.min(array), np.max(array)
+			if max_val > min_val:  # Avoid division by zero
+				array = 255 * (array - min_val) / (max_val - min_val)
+
+			gray_image = array.astype(np.uint8)
+			#resized_image = cv.resize(gray_image, new_size, interpolation=cv.INTER_LINEAR)
+
+			cv.imwrite(filename, gray_image)
+	
     #determine which letter of the alphabet is corresponding the activation
 	def determineOutput(self, out):
 		print ("---- DETERMINING OUTPUT -------")

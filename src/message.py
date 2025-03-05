@@ -109,6 +109,12 @@ class Message(object):
 	def getSingleOutput(self, loc):
 		return self.outputs[loc.getPlane()][loc.getX()][loc.getY()]
 
+	def getPointsOnPlanes(self, x, y):
+		output = []
+		for plane in range(self.numPlanes):
+			output.append(self.outputs[plane][x][y])
+		return output
+
 	def getMaxPerPlane(self, plane, points):
 		p = None
 		maxVal = -float('inf')
